@@ -27,6 +27,20 @@ export const Colors = {
   },
 };
 
+// Döviz uygulaması için özel renkler
+export const COLORS = {
+  primary: '#4A3F8F',      // Koyu mor (header için)
+  secondary: '#F8D247',    // Pastel sarı
+  background: '#F5F5F5',   // Açık gri
+  cardBackground: '#EEEEEE', // Kart arka planı
+  white: '#FFFFFF',
+  text: '#2C2C2C',
+  textSecondary: '#757575',
+  success: '#4CAF50',
+  danger: '#F44336',
+  warning: '#FF9800',
+};
+
 export const Fonts = Platform.select({
   ios: {
     /** iOS `UIFontDescriptorSystemDesignDefault` */
