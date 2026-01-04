@@ -2,8 +2,8 @@ import { COLORS } from '@/constants/theme';
 import { fetchExchangeRates } from '@/services/api';
 import { ExchangeRates } from '@/types/currency';
 import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, Animated, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -11,7 +11,10 @@ export default function HomeScreen() {
   const [rates, setRates] = useState<ExchangeRates | null>(null);
   const [loading, setLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState<string>('');
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
+  const DRAWER_WIDTH = 280;
+  const drawerAnimation = useRef(new Animated.Value(-DRAWER_WIDTH - 20)).current;
   const currencies = [
     { code: 'TRY', name: 'Türk Lirası', flag: '🇹🇷' },
     { code: 'USD', name: 'Amerikan Doları', flag: '🇺🇸' },
@@ -51,6 +54,18 @@ export default function HomeScreen() {
     return currencies.find(c => c.code === code) || { code, name: code, flag: '💱' };
   };
 
+  const toggleDrawer = () => {
+    const toValue = drawerOpen ? (-DRAWER_WIDTH - 20) : 0; 
+  
+    Animated.spring(drawerAnimation, {
+      toValue,
+      useNativeDriver: true,
+      tension: 65,
+      friction: 11
+    }).start();
+    setDrawerOpen(!drawerOpen);
+  };
+
   if (loading && !rates) {
     return (
       <View style={styles.loadingContainer}>
@@ -61,14 +76,46 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
+      {/* Drawer Menu */}
+      <Animated.View style={[styles.drawer, { transform: [{ translateX: drawerAnimation }] }]}>
+        <View style={styles.drawerHeader}>
+          <Text style={styles.drawerAppName}>NOMISMA</Text>
+        </View>
+        
+        <ScrollView style={styles.drawerContent}>
+          <TouchableOpacity style={styles.drawerItem} onPress={toggleDrawer}>
+            <View style={styles.drawerItemIconContainer}>
+              <Text style={styles.drawerItemIcon}>💱</Text>
+            </View>
+            <Text style={styles.drawerItemText}>Döviz</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={styles.drawerItem}>
+            <View style={styles.drawerItemIconContainer}>
+              <Text style={styles.drawerItemIcon}>🔄</Text>
+            </View>
+            <Text style={styles.drawerItemText}>Çevirici</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </Animated.View>
+
+      {/* Overlay */}
+      {drawerOpen && (
+        <TouchableOpacity 
+          style={styles.overlay} 
+          activeOpacity={1} 
+          onPress={toggleDrawer}
+        />
+      )}
+
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={toggleDrawer}>
           <Text style={styles.menuIcon}>☰</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>HAREM</Text>
+        <Text style={styles.headerTitle}>NOMISMA</Text>
         <TouchableOpacity onPress={loadRates}>
-          <Text style={styles.refreshIcon}>🔔</Text>
+          <Text style={styles.refreshIcon}></Text>
         </TouchableOpacity>
       </View>
 
@@ -102,12 +149,6 @@ export default function HomeScreen() {
       <View style={styles.filterTabs}>
         <TouchableOpacity style={[styles.filterTab, styles.filterTabActive]}>
           <Text style={styles.filterTabTextActive}>Birim ⬇️</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.filterTab}>
-          <Text style={styles.filterTabText}>Alış</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.filterTab}>
-          <Text style={styles.filterTabText}>Satış</Text>
         </TouchableOpacity>
       </View>
 
@@ -245,7 +286,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: COLORS.cardBackground,
     paddingVertical: 12,
-    paddingHorizontal: 15,
+    paddingHorizontal: 20,
   },
   filterTab: {
     paddingHorizontal: 20,
@@ -268,21 +309,29 @@ const styles = StyleSheet.create({
   },
   currencyList: {
     flex: 1,
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.cardBackground,
   },
   currencyCard: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: COLORS.white,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E8E8E8',
+    paddingHorizontal: 15,
+    paddingVertical: 15,
+    marginHorizontal: 10,
+    marginVertical: 5,
+    borderRadius: 12,
+    elevation: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
   },
   currencyLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    flex: 1,
+    // flex: 1 yerine sabit bir genişlik veriyoruz ki 
+    // yanındaki saat alanı hep aynı noktadan başlasın.
+    width: '45%', 
   },
   currencyFlag: {
     fontSize: 28,
@@ -298,29 +347,36 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     marginTop: 2,
   },
-  currencyCenter: {
+ currencyCenter: {
+    // Saat alanını sabitleyerek yukarıdan aşağıya hizalıyoruz
+    width: 70, 
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  updateTime: {
+ updateTime: {
     fontSize: 11,
     color: COLORS.textSecondary,
+    // Gereksiz paddingleri kaldırıyoruz
+    textAlign: 'center',
   },
-  currencyRight: {
-    flexDirection: 'row',
-    gap: 8,
+ currencyRight: {
+    // Sağ taraftaki fiyat kutusunun alanını da sabitleyebiliriz
+    flex: 1, 
+    alignItems: 'flex-end',
+    justifyContent: 'center',
   },
   rateBox: {
     alignItems: 'flex-end',
     paddingHorizontal: 12,
     paddingVertical: 8,
-    backgroundColor: COLORS.primary,
     borderRadius: 8,
     minWidth: 75,
+    color: COLORS.white,
   },
   rateValue: {
     fontSize: 15,
     fontWeight: '700',
-    color: COLORS.white,
+    color: COLORS.text,
   },
   changePercent: {
     fontSize: 10,
@@ -351,5 +407,69 @@ const styles = StyleSheet.create({
   navActive: {
     opacity: 1,
     color: COLORS.primary,
+  },
+  drawer: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 280,
+    backgroundColor: COLORS.primary,
+    zIndex: 1000,
+    elevation: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 2, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+  },
+  drawerHeader: {
+    paddingTop: 60,
+    paddingBottom: 30,
+    paddingHorizontal: 25,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  drawerAppName: {
+    fontSize: 28,
+    fontWeight: '600',
+    color: COLORS.white,
+    letterSpacing: 6,
+  },
+  drawerContent: {
+    flex: 1,
+  },
+  drawerItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 20,
+    paddingHorizontal: 25,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  drawerItemIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 15,
+  },
+  drawerItemIcon: {
+    fontSize: 22,
+  },
+  drawerItemText: {
+    fontSize: 17,
+    color: COLORS.white,
+    fontWeight: '500',
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    zIndex: 999,
   },
 });
