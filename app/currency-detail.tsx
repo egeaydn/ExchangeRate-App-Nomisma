@@ -3,6 +3,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
+import BottomNavigation from '@/components/BottomNavigation';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -12,21 +13,23 @@ export default function CurrencyDetailScreen() {
   const { code, base, rate } = params;
   const [selectedPeriod, setSelectedPeriod] = useState('HAFTA');
 
+  // Rate zaten TRY karşılığı olarak geliyor (index.tsx'ten)
+  const currentRate = parseFloat(rate as string);
+
   // Simulated historical data
   const [chartData, setChartData] = useState({
     labels: ['28.12', '29.12', '30.12', '31.12', '01.01'],
     datasets: [{
       data: [
-        parseFloat(rate as string) * 0.985,
-        parseFloat(rate as string) * 0.988,
-        parseFloat(rate as string) * 0.995,
-        parseFloat(rate as string) * 1.002,
-        parseFloat(rate as string),
+        currentRate * 0.985,
+        currentRate * 0.988,
+        currentRate * 0.995,
+        currentRate * 1.002,
+        currentRate,
       ]
     }]
   });
 
-  const currentRate = parseFloat(rate as string);
   const weekLow = Math.min(...chartData.datasets[0].data);
   const weekHigh = Math.max(...chartData.datasets[0].data);
   const openRate = chartData.datasets[0].data[0];
@@ -59,7 +62,7 @@ export default function CurrencyDetailScreen() {
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <Text style={styles.backIcon}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>HAREM</Text>
+        <Text style={styles.headerTitle}>NOMISMA</Text>
         <View style={styles.headerActions}>
           <TouchableOpacity>
             <Text style={styles.headerIcon}>↗️</Text>
@@ -79,7 +82,11 @@ export default function CurrencyDetailScreen() {
 
         {/* Current Rate */}
         <View style={styles.rateContainer}>
-          <Text style={styles.currentRate}>{currentRate.toFixed(4)}</Text>
+          <View style={styles.rateRow}>
+            <Text style={styles.rateLabel}>1 {code} = </Text>
+            <Text style={styles.currentRate}>{currentRate.toFixed(4)}</Text>
+            <Text style={styles.rateCurrency}> TRY</Text>
+          </View>
           <View style={styles.changeContainer}>
             <Text style={[styles.changeText, change >= 0 ? styles.positive : styles.negative]}>
               {change >= 0 ? '↑' : '↓'} {Math.abs(change).toFixed(2)}%
@@ -191,29 +198,8 @@ export default function CurrencyDetailScreen() {
         </View>
       </ScrollView>
 
-      {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
-        <View style={styles.navItem}>
-          <Text style={[styles.navIcon, styles.navActive]}>🌍</Text>
-          <Text style={[styles.navText, styles.navActive]}>Döviz</Text>
-        </View>
-        <View style={styles.navItem}>
-          <Text style={styles.navIcon}>🏦</Text>
-          <Text style={styles.navText}>Altın</Text>
-        </View>
-        <View style={styles.navItem}>
-          <Text style={styles.navIcon}>🔄</Text>
-          <Text style={styles.navText}>Çevirici</Text>
-        </View>
-        <View style={styles.navItem}>
-          <Text style={styles.navIcon}>💼</Text>
-          <Text style={styles.navText}>Portföy</Text>
-        </View>
-        <View style={styles.navItem}>
-          <Text style={styles.navIcon}>🛒</Text>
-          <Text style={styles.navText}>Çarşı</Text>
-        </View>
-      </View>
+              <BottomNavigation />
+
     </View>
   );
 }
@@ -272,14 +258,26 @@ const styles = StyleSheet.create({
   rateContainer: {
     paddingHorizontal: 20,
     paddingTop: 15,
+    alignItems: 'baseline',
+  },
+  rateRow: {
     flexDirection: 'row',
     alignItems: 'baseline',
-    gap: 10,
+  },
+  rateLabel: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: COLORS.textSecondary,
   },
   currentRate: {
     fontSize: 42,
     fontWeight: '700',
     color: COLORS.text,
+  },
+  rateCurrency: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: COLORS.textSecondary,
   },
   changeContainer: {
     paddingHorizontal: 10,
@@ -388,30 +386,5 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
     color: COLORS.text,
-  },
-  bottomNav: {
-    flexDirection: 'row',
-    backgroundColor: COLORS.white,
-    paddingVertical: 10,
-    paddingBottom: 20,
-    borderTopWidth: 1,
-    borderTopColor: '#f0f0f0',
-  },
-  navItem: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  navIcon: {
-    fontSize: 24,
-    opacity: 0.5,
-  },
-  navText: {
-    fontSize: 11,
-    color: COLORS.textSecondary,
-    marginTop: 4,
-  },
-  navActive: {
-    opacity: 1,
-    color: COLORS.primary,
   },
 });

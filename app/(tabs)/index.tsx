@@ -1,3 +1,4 @@
+import BottomNavigation from '@/components/BottomNavigation';
 import { COLORS } from '@/constants/theme';
 import { fetchExchangeRates } from '@/services/api';
 import { ExchangeRates } from '@/types/currency';
@@ -46,7 +47,10 @@ export default function HomeScreen() {
 
   const handleCurrencyPress = (code: string) => {
     if (rates && rates.rates[code]) {
-      router.push(`/currency-detail?code=${code}&base=${baseCurrency}&rate=${rates.rates[code]}`);
+      const tryRate = rates.rates['TRY'] || 1;
+      const rate = rates.rates[code];
+      const rateInTRY = (tryRate / rate);
+      router.push(`/currency-detail?code=${code}&base=${baseCurrency}&rate=${rateInTRY}`);
     }
   };
 
@@ -190,23 +194,14 @@ export default function HomeScreen() {
           );
         })}
       </ScrollView>
-
-      {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navItem}>
-          <Text style={[styles.navIcon, styles.navActive]}>🌍</Text>
-          <Text style={[styles.navText, styles.navActive]}>Döviz</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Text style={styles.navIcon}>🔄</Text>
-          <Text style={styles.navText}>Çevirici</Text>
-        </TouchableOpacity>
-      </View>
+      
+        <BottomNavigation />
+      
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
@@ -382,31 +377,6 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '600',
     marginTop: 2,
-  },
-  bottomNav: {
-    flexDirection: 'row',
-    backgroundColor: COLORS.white,
-    paddingVertical: 10,
-    paddingBottom: 20,
-    borderTopWidth: 1,
-    borderTopColor: '#f0f0f0',
-  },
-  navItem: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  navIcon: {
-    fontSize: 24,
-    opacity: 0.5,
-  },
-  navText: {
-    fontSize: 11,
-    color: COLORS.textSecondary,
-    marginTop: 4,
-  },
-  navActive: {
-    opacity: 1,
-    color: COLORS.primary,
   },
   drawer: {
     position: 'absolute',

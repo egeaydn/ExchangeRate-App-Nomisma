@@ -15,8 +15,7 @@ export default function TabLayout() {
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarStyle: { display: 'none' },
-      }}>
-      
-    </Tabs>
+      }}
+    />
   );
 }
