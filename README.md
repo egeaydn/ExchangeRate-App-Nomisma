@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/yourusername/ExchangeRate-App/main/assets/showcase.png" alt="NOMISMA - The Calmer State of Money" width="100%">
+  <img src="./assets/images/Untitled.png" alt="NOMISMA - The Calmer State of Money" width="100%">
   
   # 💱 NOMISMA
   ### The Calmer State of Money
