@@ -1,9 +1,10 @@
+import BottomNavigation from '@/components/BottomNavigation';
 import { COLORS } from '@/constants/theme';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
-import BottomNavigation from '@/components/BottomNavigation';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -58,7 +59,12 @@ export default function CurrencyDetailScreen() {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
+      <LinearGradient
+        colors={['#0D47A1', '#1565C0', '#1976D2']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.header}
+      >
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <Text style={styles.backIcon}>←</Text>
         </TouchableOpacity>
@@ -71,7 +77,7 @@ export default function CurrencyDetailScreen() {
             <Text style={styles.headerIcon}>➕</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </LinearGradient>
 
       <ScrollView style={styles.content}>
         {/* Currency Info */}
@@ -210,7 +216,6 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
   },
   header: {
-    backgroundColor: COLORS.primary,
     paddingTop: 45,
     paddingBottom: 12,
     paddingHorizontal: 20,

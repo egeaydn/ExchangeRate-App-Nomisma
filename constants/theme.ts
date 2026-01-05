@@ -29,16 +29,17 @@ export const Colors = {
 
 // Döviz uygulaması için özel renkler
 export const COLORS = {
-  primary: '#4A3F8F',      // Koyu mor (header için)
-  secondary: '#F8D247',    // Pastel sarı
-  background: '#F5F5F5',   // Açık gri
-  cardBackground: '#EEEEEE', // Kart arka planı
+  primary: '#0D47A1',      // Koyu parlak mavi
+  secondary: '#1976D2',    // Orta parlak mavi
+  background: '#F5F7FA',   // Açık gri-mavi
+  cardBackground: '#FFFFFF', 
   white: '#FFFFFF',
-  text: '#2C2C2C',
-  textSecondary: '#757575',
+  text: '#2C3E50',
+  textSecondary: '#7F8C8D',
   success: '#4CAF50',
   danger: '#F44336',
   warning: '#FF9800',
+  border: '#E0E0E0',
 };
 
 export const Fonts = Platform.select({

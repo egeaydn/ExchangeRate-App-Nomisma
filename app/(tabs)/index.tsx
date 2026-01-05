@@ -2,6 +2,7 @@ import BottomNavigation from '@/components/BottomNavigation';
 import { COLORS } from '@/constants/theme';
 import { fetchExchangeRates } from '@/services/api';
 import { ExchangeRates } from '@/types/currency';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Animated, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -119,18 +120,25 @@ export default function HomeScreen() {
       )}
 
       {/* Header */}
-      <View style={styles.header}>
+      <LinearGradient
+        colors={['#0D47A1', '#1565C0', '#1976D2']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.header}
+      >
         <TouchableOpacity onPress={toggleDrawer}>
           <Text style={styles.menuIcon}>☰</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>NOMISMA</Text>
-        <TouchableOpacity onPress={loadRates}>
-          <Text style={styles.refreshIcon}></Text>
-        </TouchableOpacity>
-      </View>
+        <Text style={styles.headerTitle}>N O M I S M A</Text>
+      </LinearGradient>
 
       {/* Top Rates Slider */}
-      <View style={styles.topRatesContainer}>
+      <LinearGradient
+        colors={['#0D47A1', '#1565C0', '#1976D2']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.topRatesContainer}
+      >
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.topRatesScroll}>
           {rates && rates.rates['TRY'] && ['USD', 'EUR', 'GBP', 'JPY', 'CAD'].map((code) => {
             const rate = rates.rates[code];
@@ -153,7 +161,7 @@ export default function HomeScreen() {
             );
           })}
         </ScrollView>
-      </View>
+      </LinearGradient>
 
       {/* Filter Tabs */}
       <View style={styles.filterTabs}>
@@ -239,6 +247,7 @@ export const styles = StyleSheet.create({
     fontWeight: '400',
     color: COLORS.white,
     letterSpacing: 8,
+    marginRight: 40,  
   },
   refreshIcon: {
     fontSize: 24,
@@ -389,7 +398,7 @@ export const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     width: 280,
-    backgroundColor: COLORS.primary,
+    backgroundColor: '#0D47A1',
     zIndex: 1000,
     elevation: 10,
     shadowColor: '#000',

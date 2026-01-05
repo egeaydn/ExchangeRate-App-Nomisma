@@ -2,6 +2,7 @@ import BottomNavigation from '@/components/BottomNavigation';
 import { COLORS } from '@/constants/theme';
 import { fetchExchangeRates } from '@/services/api';
 import { ExchangeRates } from '@/types/currency';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -190,13 +191,18 @@ export default function ConverterScreen() {
       keyboardVerticalOffset={0}
     >
       {/* Header */}
-      <View style={styles.header}>
+      <LinearGradient
+        colors={['#0D47A1', '#1565C0', '#1976D2']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.header}
+      >
         <TouchableOpacity onPress={() => router.back()}>
           <Text style={styles.menuIcon}>☰</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Çevirici</Text>
         <View style={styles.headerActions} />
-      </View>
+      </LinearGradient>
 
       {/* Tabs */}
       <View style={styles.tabs}>
@@ -210,7 +216,6 @@ export default function ConverterScreen() {
         <View style={styles.selectionCard}>
           <TouchableOpacity 
             style={styles.currencySelect}
-            onPress={() => setShowFromPicker(!showFromPicker)}
           >
             <Text style={styles.currencySelectCode}>{fromCurrency}</Text>
             <Text style={styles.currencySelectName}>{fromInfo.name}</Text>
@@ -222,14 +227,12 @@ export default function ConverterScreen() {
 
           <TouchableOpacity 
             style={styles.currencySelect}
-            onPress={() => setShowToPicker(!showToPicker)}
           >
             <Text style={styles.currencySelectCode}>{toCurrency}</Text>
             <Text style={styles.currencySelectName}>{toInfo.name}</Text>
           </TouchableOpacity>
         </View>
 
-        {/* From Currency Picker */}
         {showFromPicker && (
           <View style={styles.pickerContainer}>
             <ScrollView style={styles.picker}>
@@ -404,9 +407,8 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
   },
   header: {
-    backgroundColor: COLORS.primary,
     paddingTop: 45,
-    paddingBottom: 12,
+    paddingBottom: 22,
     paddingHorizontal: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
