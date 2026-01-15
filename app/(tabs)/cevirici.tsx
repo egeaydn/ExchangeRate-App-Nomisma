@@ -11,7 +11,7 @@ export default function ConverterScreen() {
   const router = useRouter();
   const [rates, setRates] = useState<ExchangeRates | null>(null);
   const [loading, setLoading] = useState(true);
-  
+
   const [fromCurrency, setFromCurrency] = useState('TRY');
   const [toCurrency, setToCurrency] = useState('USD');
   const [fromAmount, setFromAmount] = useState('4000');
@@ -55,11 +55,11 @@ export default function ConverterScreen() {
       console.log('Rates is null, returning empty array');
       return [];
     }
-    
+
     console.log('Rates object:', rates);
     const availableCodes = ['TRY', 'CHF', ...Object.keys(rates.rates)];
     console.log('Available codes:', availableCodes);
-    
+
     return availableCodes
       .filter((code, index, self) => self.indexOf(code) === index) // Remove duplicates
       .sort()
@@ -155,12 +155,12 @@ export default function ConverterScreen() {
 
   const getExchangeRate = () => {
     if (!rates || !fromAmount || fromAmount === '0') return '0.00';
-    
+
     const numAmount = parseFloat(fromAmount);
     const numToAmount = parseFloat(toAmount);
-    
+
     if (isNaN(numAmount) || isNaN(numToAmount) || numAmount === 0) return '0.00';
-    
+
     return (numToAmount / numAmount).toFixed(4);
   };
 
@@ -185,7 +185,7 @@ export default function ConverterScreen() {
   }
 
   return (
-    <KeyboardAvoidingView 
+    <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={0}
@@ -214,7 +214,7 @@ export default function ConverterScreen() {
       <ScrollView style={styles.content}>
         {/* Currency Selection Card */}
         <View style={styles.selectionCard}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.currencySelect}
           >
             <Text style={styles.currencySelectCode}>{fromCurrency}</Text>
@@ -225,7 +225,7 @@ export default function ConverterScreen() {
             <Text style={styles.swapIcon}>⇄</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.currencySelect}
           >
             <Text style={styles.currencySelectCode}>{toCurrency}</Text>
@@ -301,51 +301,57 @@ export default function ConverterScreen() {
         {/* Input Fields */}
         <View style={styles.inputContainer}>
           <View style={styles.inputBox}>
-            <TouchableOpacity 
-              style={styles.currencyButton}
+            <TouchableOpacity
+              style={styles.currencySelectorHeader}
               onPress={() => {
-                console.log('From currency button pressed');
                 setShowFromInputPicker(!showFromInputPicker);
               }}
             >
-              <Text style={styles.currencyButtonText}>{fromCurrency} ▼</Text>
+              <Text style={styles.currencySelectorText}>{fromCurrency}</Text>
+              <Text style={styles.currencySelectorArrow}>▼</Text>
             </TouchableOpacity>
-            <TextInput
-              style={styles.input}
-              value={fromAmount}
-              onChangeText={setFromAmount}
-              keyboardType="numeric"
-              placeholder="0"
-              placeholderTextColor="#ccc"
-            />
-            <Text style={styles.inputLabel}>{fromCurrency}</Text>
+
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={styles.input}
+                value={fromAmount}
+                onChangeText={setFromAmount}
+                keyboardType="numeric"
+                placeholder="0"
+                placeholderTextColor="#A0A0A0"
+                textAlign="center"
+              />
+            </View>
           </View>
 
           <View style={styles.inputBox}>
-            <TouchableOpacity 
-              style={styles.currencyButton}
+            <TouchableOpacity
+              style={styles.currencySelectorHeader}
               onPress={() => {
-                console.log('To currency button pressed');
                 setShowToInputPicker(!showToInputPicker);
               }}
             >
-              <Text style={styles.currencyButtonText}>{toCurrency} ▼</Text>
+              <Text style={styles.currencySelectorText}>{toCurrency}</Text>
+              <Text style={styles.currencySelectorArrow}>▼</Text>
             </TouchableOpacity>
-            <TextInput
-              style={styles.input}
-              value={toAmount}
-              onChangeText={(value) => {
-                setToAmount(value);
-                if (value && !isNaN(parseFloat(value))) {
-                  convertCurrency(value, toCurrency, fromCurrency);
-                  setFromAmount((parseFloat(value) * (1 / parseFloat(getExchangeRate()))).toFixed(2));
-                }
-              }}
-              keyboardType="numeric"
-              placeholder="0"
-              placeholderTextColor="#ccc"
-            />
-            <Text style={styles.inputLabel}>{toCurrency}</Text>
+
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={styles.input}
+                value={toAmount}
+                onChangeText={(value) => {
+                  setToAmount(value);
+                  if (value && !isNaN(parseFloat(value))) {
+                    convertCurrency(value, toCurrency, fromCurrency);
+                    setFromAmount((parseFloat(value) * (1 / parseFloat(getExchangeRate()))).toFixed(2));
+                  }
+                }}
+                keyboardType="numeric"
+                placeholder="0"
+                placeholderTextColor="#A0A0A0"
+                textAlign="center"
+              />
+            </View>
           </View>
         </View>
       </ScrollView>
@@ -360,9 +366,9 @@ export default function ConverterScreen() {
           setShowToInputPicker(false);
         }}
       >
-        <TouchableOpacity 
-          style={styles.pickerBackdrop} 
-          activeOpacity={1} 
+        <TouchableOpacity
+          style={styles.pickerBackdrop}
+          activeOpacity={1}
           onPress={() => {
             setShowFromInputPicker(false);
             setShowToInputPicker(false);
@@ -378,7 +384,7 @@ export default function ConverterScreen() {
                   onPress={() => {
                     if (showFromInputPicker) setFromCurrency(currency.code);
                     else setToCurrency(currency.code);
-                    
+
                     setShowFromInputPicker(false);
                     setShowToInputPicker(false);
                   }}
@@ -578,36 +584,47 @@ const styles = StyleSheet.create({
   inputBox: {
     flex: 1,
     backgroundColor: COLORS.white,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: '#E0E0E0',
-    padding: 20,
+    borderRadius: 16,
+    padding: 16,
+    height: 140,
+    justifyContent: 'space-between',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 3,
   },
-  currencyButton: {
-    alignSelf: 'flex-end',
-    backgroundColor: '#F0F0F0',
-    paddingHorizontal: 12,
+  currencySelectorHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F5F7FA',
     paddingVertical: 8,
+    paddingHorizontal: 12,
     borderRadius: 8,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: '#D0D0D0',
+    alignSelf: 'stretch',
   },
-  currencyButtonText: {
-    fontSize: 14,
+  currencySelectorText: {
+    fontSize: 16,
     fontWeight: '700',
     color: COLORS.text,
+    marginRight: 4,
+  },
+  currencySelectorArrow: {
+    fontSize: 12,
+    color: COLORS.textSecondary,
+  },
+  inputWrapper: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   input: {
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: '700',
     color: COLORS.text,
-    marginBottom: 8,
-  },
-  inputLabel: {
-    fontSize: 14,
-    color: COLORS.textSecondary,
-    fontWeight: '600',
+    padding: 0,
+    width: '100%',
   },
   pickerBackdrop: {
     flex: 1,
